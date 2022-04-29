@@ -1,9 +1,10 @@
 const addItems = document.querySelector('.add-items');
 const itemsList = document.querySelector('.plates');
-const items = [];
+const items = JSON.parse(localStorage.getItem('item')) || [];
 
 function addItem(e){
 
+  e.preventDefault();
   let addText = this.querySelector('[name="item"]').value;
 
   const text = {
@@ -13,10 +14,9 @@ function addItem(e){
 
   items.push(text);
   createChecklist(items);
-
-  e.preventDefault();
+  
   this.reset();
-
+  localStorage.setItem('item', JSON.stringify(items));
 }
 
 function createChecklist(plates=[],platesList ){
@@ -30,5 +30,15 @@ function createChecklist(plates=[],platesList ){
   }).join('');
 }
 
+function toggleDone(e){
+  if(!e.target.matches('input')) return; // only takes the input element not the lable
+  const el = e.target;
+  const index = el.dataset.index; //check the array item index
+  items[index].done = !items[index].done; // reverse it due to the click
+  localStorage.setItem('item', JSON.stringify(items));
+  createChecklist(items, itemsList);
+}
 
 addItems.addEventListener('submit', addItem);
+itemsList.addEventListener('click', toggleDone);
+createChecklist(items, itemsList);
